@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>華やかなテトリス</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="game-header">
+            <h1>✨ 華やかなテトリス ✨</h1>
+        </div>
+        
+        <div class="game-wrapper">
+            <div class="info-panel">
+                <div class="score-container">
+                    <h2>スコア</h2>
+                    <div id="score" class="score-value">0</div>
+                </div>
+                
+                <div class="level-container">
+                    <h2>レベル</h2>
+                    <div id="level" class="level-value">1</div>
+                </div>
+                
+                <div class="lines-container">
+                    <h2>ライン</h2>
+                    <div id="lines" class="lines-value">0</div>
+                </div>
+                
+                <div class="next-container">
+                    <h2>次のブロック</h2>
+                    <canvas id="nextCanvas" width="120" height="120"></canvas>
+                </div>
+            </div>
+            
+            <div class="game-canvas-wrapper">
+                <canvas id="gameCanvas" width="300" height="600"></canvas>
+                <div id="gameOver" class="game-over-screen">
+                    <h2>ゲームオーバー</h2>
+                    <p>スコア: <span id="finalScore">0</span></p>
+                    <button id="restartButton">もう一度プレイ</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <h3>操作方法</h3>
+            <div class="control-buttons">
+                <div class="control-item">
+                    <span class="key">←</span>
+                    <span>左に移動</span>
+                </div>
+                <div class="control-item">
+                    <span class="key">→</span>
+                    <span>右に移動</span>
+                </div>
+                <div class="control-item">
+                    <span class="key">↓</span>
+                    <span>高速落下</span>
+                </div>
+                <div class="control-item">
+                    <span class="key">↑</span>
+                    <span>回転</span>
+                </div>
+                <div class="control-item">
+                    <span class="key">スペース</span>
+                    <span>一時停止/再開</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="tetris.js"></script>
+</body>
+</html>
