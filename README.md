@@ -13,6 +13,11 @@ Webブラウザで遊べる、カラフルで華やかなテトリスゲーム�
 
 ## プレイ方法
 
+### オンラインでプレイ
+GitHub Pagesで公開されているゲームをプレイできます：
+- URL: `https://shinonomekazan.github.io/game-test2/`
+
+### ローカルでプレイ
 1. `index.html` をWebブラウザで開いてください
 2. キーボードで操作します：
    - **←** : 左に移動
@@ -50,3 +55,30 @@ Webブラウザで遊べる、カラフルで華やかなテトリスゲーム�
 ## ライセンス
 
 このプロジェクトはオープンソースです。
+
+## GitHub Pages デプロイ手順
+
+このリポジトリはGitHub Actionsを使用して自動的にGitHub Pagesにデプロイされます。
+
+### 初回セットアップ（リポジトリ管理者が実行）
+
+1. GitHubリポジトリの **Settings** タブを開く
+2. 左サイドバーの **Pages** をクリック
+3. **Source** セクションで以下を設定：
+   - **Source**: "GitHub Actions" を選択
+4. 設定を保存
+
+### デプロイの仕組み
+
+- `main` ブランチにプッシュすると自動的にデプロイされます
+- GitHub Actionsワークフローが `.github/workflows/deploy.yml` で定義されています
+- デプロイ状況は **Actions** タブで確認できます
+
+### 手動デプロイ
+
+必要に応じて、**Actions** タブから "Deploy to GitHub Pages" ワークフローを手動実行することもできます。
+
+### デプロイ後の確認
+
+デプロイが完了すると、以下のURLでゲームにアクセスできます：
+- `https://shinonomekazan.github.io/game-test2/`
