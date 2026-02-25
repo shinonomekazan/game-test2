@@ -1,17 +1,18 @@
 // 色違いゲーム - Game Logic
 
 const GRID_SIZES = [2, 3, 4, 5, 6, 7, 8, 9, 10]; // n×n grids (4,9,16,...,100 cells)
-const TIME_LIMIT = 5; // seconds per round
+const TIME_LIMIT_INITIAL = 5; // starting seconds per round
 
-let currentStage = 0;   // index into GRID_SIZES
+let currentStage = 0;   // index into GRID_SIZES (used in standard course)
+let currentCourse = 'standard'; // 'standard' or 'random'
 let score = 0;
 let bestScore = 0;
 let timerInterval = null;
-let timeLeft = TIME_LIMIT;
+let timeLeft = TIME_LIMIT_INITIAL;
+let timeLimit = TIME_LIMIT_INITIAL; // dynamic time limit, changes each round
 let correctCell = -1;   // index of the odd-colored cell
 let gameActive = false;
 let roundActive = false;
-let mistakeUsed = false; // one-time mistake forgiveness per game
 let playerName = '';
 let db = null;
 
@@ -123,8 +124,14 @@ function updateTimerUI() {
 }
 
 function updateStageUI() {
-    const n = GRID_SIZES[currentStage];
+    const n = currentCourse === 'random'
+        ? GRID_SIZES[currentStage]
+        : GRID_SIZES[currentStage];
     document.getElementById('stage').textContent = `${n}×${n}`;
+    const courseEl = document.getElementById('course-label');
+    if (courseEl) {
+        courseEl.textContent = currentCourse === 'random' ? 'ランダム' : 'スタンダード';
+    }
 }
 
 // ---- Player name ----
@@ -233,7 +240,7 @@ function loadBestScore() {
 
 // ---- Timer ----
 function startTimer() {
-    timeLeft = TIME_LIMIT;
+    timeLeft = timeLimit;
     updateTimerUI();
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
@@ -267,14 +274,15 @@ function showGameScreen() {
 }
 
 // ---- Game flow ----
-function startGame() {
+function startGame(course) {
     const input = document.getElementById('player-name-input');
     playerName = input ? input.value.trim() : '';
     if (playerName) savePlayerName(playerName);
 
+    currentCourse = course || 'standard';
     currentStage = 0;
     score = 0;
-    mistakeUsed = false;
+    timeLimit = TIME_LIMIT_INITIAL;
     bestScore = loadBestScore();
     gameActive = true;
     showGameScreen();
@@ -284,6 +292,11 @@ function startGame() {
 
 function startRound() {
     roundActive = true;
+
+    if (currentCourse === 'random') {
+        currentStage = randomInt(0, GRID_SIZES.length - 1);
+    }
+
     updateStageUI();
 
     const n = GRID_SIZES[currentStage];
@@ -337,36 +350,20 @@ function handleAnswer(idx) {
         score++;
         if (score > bestScore) bestScore = score;
         updateScoreUI();
-        currentStage = Math.min(currentStage + 1, GRID_SIZES.length - 1);
+        timeLimit++;
+        if (currentCourse === 'standard') {
+            currentStage = Math.min(currentStage + 1, GRID_SIZES.length - 1);
+        }
         setTimeout(() => startRound(), 0);
     } else {
-        if (!mistakeUsed) {
-            // First mistake – forgive and let player try again
-            mistakeUsed = true;
-            playWrong();
-            vibrate(200);
-            highlightCell(idx, false);
-            const msg = document.getElementById('chance-message');
-            if (msg) {
-                msg.classList.remove('hidden');
-                setTimeout(() => msg.classList.add('hidden'), 1000);
-            }
-            setTimeout(() => {
-                const cells = document.querySelectorAll('.cell');
-                if (cells[idx]) cells[idx].classList.remove('wrong');
-                roundActive = true;
-                startTimer(); // reset timer for another attempt
-            }, 600);
-        } else {
-            // Second mistake – end game
-            roundActive = false;
-            stopTimer();
-            playWrong();
-            vibrate([200, 100, 200]);
-            highlightCell(idx, false);
-            highlightCell(correctCell, true);
-            setTimeout(() => endGame(), 800);
-        }
+        roundActive = false;
+        stopTimer();
+        playWrong();
+        vibrate([200, 100, 200]);
+        highlightCell(idx, false);
+        highlightCell(correctCell, true);
+        timeLimit = Math.max(1, timeLimit - 1);
+        setTimeout(() => endGame(), 800);
     }
 }
 
@@ -402,9 +399,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initFirebase();
     showStartScreen();
 
-    document.getElementById('start-btn').addEventListener('click', () => {
+    document.getElementById('start-standard-btn').addEventListener('click', () => {
         if (audioCtx.state === 'suspended') audioCtx.resume();
-        startGame();
+        startGame('standard');
+    });
+    document.getElementById('start-random-btn').addEventListener('click', () => {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        startGame('random');
     });
     document.getElementById('retry-btn').addEventListener('click', () => {
         if (audioCtx.state === 'suspended') audioCtx.resume();

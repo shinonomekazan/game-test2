@@ -329,13 +329,24 @@ h1 {
     cursor: pointer;
     background: #f9c74f;
     color: #1a1a2e;
-    margin-bottom: 32px;
+    margin-bottom: 12px;
     transition: opacity 0.15s, transform 0.1s;
+}
+
+.btn.btn-secondary {
+    background: #4a4a8e;
+    color: #fff;
+    margin-bottom: 32px;
 }
 
 .btn:active {
     opacity: 0.85;
     transform: scale(0.97);
+}
+
+.course-select {
+    width: 100%;
+    max-width: 420px;
 }
 
 /* ---- Result screen ---- */

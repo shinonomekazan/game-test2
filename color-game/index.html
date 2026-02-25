@@ -10,7 +10,7 @@
     <!-- Start screen -->
     <div id="start-screen">
         <div class="start-logo">
-            <img src="https://github.com/user-attachments/assets/2381689c-139d-4198-ae63-90ae1e151360" alt="しのめゲームズ" class="logo-img">
+            <img src="https://github.com/user-attachments/assets/ea79ec95-344d-475f-8427-412f0cd4747a" alt="しのめゲームズ" class="logo-img">
         </div>
         <h1>🎨 色違いゲーム</h1>
         <div class="name-input-area">
@@ -21,17 +21,24 @@
             <h3>🏆 ランキング TOP10</h3>
             <ol id="ranking-list"></ol>
         </div>
-        <button class="btn" id="start-btn">🎮 スタート</button>
+        <div class="course-select">
+            <button class="btn" id="start-standard-btn">🎮 スタンダードコース</button>
+            <button class="btn btn-secondary" id="start-random-btn">🎲 ランダムコース</button>
+        </div>
     </div>
 
     <!-- Game screen -->
     <div id="game-screen" class="hidden">
         <div class="game-header">
-            <img src="https://github.com/user-attachments/assets/2381689c-139d-4198-ae63-90ae1e151360" alt="しのめゲームズ" class="game-logo">
+            <img src="https://github.com/user-attachments/assets/ea79ec95-344d-475f-8427-412f0cd4747a" alt="しのめゲームズ" class="game-logo">
             <h1>🎨 色違いゲーム</h1>
         </div>
 
         <div class="info-bar">
+            <div class="info-item">
+                <div class="info-label">コース</div>
+                <div class="info-value" id="course-label">-</div>
+            </div>
             <div class="info-item">
                 <div class="info-label">グリッド</div>
                 <div class="info-value" id="stage">2×2</div>
@@ -53,8 +60,6 @@
         <div id="grid-wrapper">
             <div id="grid"></div>
         </div>
-
-        <div id="chance-message" class="chance-message hidden">もう一度！</div>
     </div>
 
     <!-- Result overlay -->
