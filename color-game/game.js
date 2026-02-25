@@ -13,6 +13,7 @@ let gameActive = false;
 let roundActive = false;
 let mistakeUsed = false; // one-time mistake forgiveness per game
 let playerName = '';
+let db = null;
 
 // ---- Audio ----
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -135,6 +136,20 @@ function savePlayerName(name) {
     localStorage.setItem('colorGamePlayerName', name);
 }
 
+// ---- Firebase Firestore ----
+function initFirebase() {
+    try {
+        if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined'
+            && firebaseConfig.projectId && !firebaseConfig.projectId.startsWith('YOUR_')) {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+        }
+    } catch (e) {
+        console.warn('Firebase initialization failed:', e);
+        db = null;
+    }
+}
+
 // ---- Ranking ----
 function loadRanking() {
     try {
@@ -151,7 +166,20 @@ function saveRanking(ranking) {
     } catch {}
 }
 
-function addToRanking(name, s) {
+async function addToRanking(name, s) {
+    // Save to Firestore (shared ranking)
+    if (db) {
+        try {
+            await db.collection('colorGameRanking').add({
+                name: name || '名無し',
+                score: s,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        } catch (e) {
+            console.warn('Firestore save failed:', e);
+        }
+    }
+    // Also save to localStorage as offline fallback
     const ranking = loadRanking();
     ranking.push({ name: name || '名無し', score: s });
     ranking.sort((a, b) => b.score - a.score);
@@ -160,8 +188,24 @@ function addToRanking(name, s) {
     return top10;
 }
 
-function renderRanking() {
-    const ranking = loadRanking();
+async function renderRanking() {
+    let ranking = null;
+    // Try loading shared ranking from Firestore
+    if (db) {
+        try {
+            const snapshot = await db.collection('colorGameRanking')
+                .orderBy('score', 'desc')
+                .limit(10)
+                .get();
+            ranking = snapshot.docs.map(doc => doc.data());
+        } catch (e) {
+            console.warn('Firestore load failed:', e);
+        }
+    }
+    // Fall back to localStorage if Firestore unavailable
+    if (!ranking) {
+        ranking = loadRanking();
+    }
     const list = document.getElementById('ranking-list');
     if (!list) return;
     list.innerHTML = '';
@@ -335,9 +379,9 @@ function onTimeout() {
     setTimeout(() => endGame(), 800);
 }
 
-function endGame() {
+async function endGame() {
     gameActive = false;
-    addToRanking(playerName || '名無し', score);
+    await addToRanking(playerName || '名無し', score);
     bestScore = loadBestScore();
     updateScoreUI();
 
@@ -355,6 +399,7 @@ function highlightCell(idx, correct) {
 
 // ---- Init ----
 document.addEventListener('DOMContentLoaded', () => {
+    initFirebase();
     showStartScreen();
 
     document.getElementById('start-btn').addEventListener('click', () => {
