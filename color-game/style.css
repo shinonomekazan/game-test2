@@ -1,0 +1,223 @@
+/* 色違いゲーム - Styles */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #1a1a2e;
+    color: #eee;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+h1 {
+    text-align: center;
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+    color: #f9c74f;
+    text-shadow: 0 0 12px rgba(249, 199, 79, 0.5);
+}
+
+/* ---- Info bar ---- */
+.info-bar {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    width: 100%;
+    max-width: 420px;
+}
+
+.info-item {
+    background: #16213e;
+    border-radius: 10px;
+    padding: 8px 16px;
+    text-align: center;
+    flex: 1;
+    min-width: 80px;
+}
+
+.info-label {
+    font-size: 0.7rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.info-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.timer-value.danger {
+    color: #f94144;
+    animation: pulse 0.5s infinite alternate;
+}
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    to   { transform: scale(1.15); }
+}
+
+/* ---- Grid ---- */
+#grid-wrapper {
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 1 / 1;
+    margin-bottom: 12px;
+}
+
+#grid {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    gap: 4px;
+}
+
+.cell {
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.cell:active {
+    transform: scale(0.92);
+}
+
+.cell.correct {
+    outline: 4px solid #06d6a0;
+    animation: pop 0.4s ease;
+}
+
+.cell.wrong {
+    outline: 4px solid #f94144;
+    animation: shake 0.3s ease;
+}
+
+@keyframes pop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes shake {
+    0%   { transform: translateX(0); }
+    25%  { transform: translateX(-6px); }
+    75%  { transform: translateX(6px); }
+    100% { transform: translateX(0); }
+}
+
+/* ---- Buttons ---- */
+.btn {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    padding: 14px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: #f9c74f;
+    color: #1a1a2e;
+    margin-bottom: 16px;
+    transition: opacity 0.15s, transform 0.1s;
+}
+
+.btn:active {
+    opacity: 0.85;
+    transform: scale(0.97);
+}
+
+/* ---- Result screen ---- */
+#result-screen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.82);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 24px;
+}
+
+#result-screen.hidden {
+    display: none;
+}
+
+.result-box {
+    background: #16213e;
+    border-radius: 18px;
+    padding: 28px 32px;
+    text-align: center;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.result-box h2 {
+    font-size: 1.6rem;
+    margin-bottom: 16px;
+    color: #f9c74f;
+}
+
+.result-stat {
+    font-size: 1rem;
+    margin-bottom: 6px;
+    color: #ccc;
+}
+
+.result-stat span {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    display: block;
+}
+
+/* ---- History ---- */
+.history-section {
+    width: 100%;
+    max-width: 420px;
+    margin-top: 8px;
+}
+
+.history-section h3 {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+#history-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+#history-list li {
+    background: #16213e;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+#history-list li.best {
+    background: #f9c74f;
+    color: #1a1a2e;
+    font-weight: bold;
+}

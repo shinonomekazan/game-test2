@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>色違いゲーム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>🎨 色違いゲーム</h1>
+
+    <div class="info-bar">
+        <div class="info-item">
+            <div class="info-label">グリッド</div>
+            <div class="info-value" id="stage">2×2</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">残り時間</div>
+            <div class="info-value timer-value" id="timer">5</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">スコア</div>
+            <div class="info-value" id="score">0</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">最高</div>
+            <div class="info-value" id="best-score">0</div>
+        </div>
+    </div>
+
+    <div id="grid-wrapper">
+        <div id="grid"></div>
+    </div>
+
+    <button class="btn" id="start-btn">🎮 スタート</button>
+
+    <div class="history-section">
+        <h3>📋 履歴（最近10回）</h3>
+        <ul id="history-list"></ul>
+    </div>
+
+    <!-- Result overlay -->
+    <div id="result-screen" class="hidden">
+        <div class="result-box">
+            <h2>ゲーム終了！</h2>
+            <div class="result-stat">
+                クリアステージ数
+                <span id="result-score">0</span>
+            </div>
+            <div class="result-stat">
+                最高記録
+                <span id="result-best">0</span>
+            </div>
+            <button class="btn" id="retry-btn" style="margin-top:20px;margin-bottom:0">🔄 もう一度</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
