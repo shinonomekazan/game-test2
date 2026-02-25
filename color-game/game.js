@@ -222,16 +222,12 @@ function handleAnswer(idx) {
     if (idx === correctCell) {
         playCorrect();
         highlightCell(correctCell, true);
-        score = currentStage + 1; // score = stages cleared
+        score++; // count total cleared pages
         if (score > bestScore) bestScore = score;
         updateScoreUI();
         currentStage = Math.min(currentStage + 1, GRID_SIZES.length - 1);
         setTimeout(() => {
-            if (currentStage < GRID_SIZES.length) {
-                startRound();
-            } else {
-                endGame();
-            }
+            startRound();
         }, 600);
     } else {
         playWrong();
@@ -251,7 +247,6 @@ function onTimeout() {
 
 function endGame() {
     gameActive = false;
-    // record is stages reached (= score)
     history.push(score);
     if (score > bestScore) bestScore = score;
     saveHistory();
