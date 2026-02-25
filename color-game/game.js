@@ -14,39 +14,12 @@ let roundActive = false;
 let mistakeUsed = false; // one-time mistake forgiveness per game
 let playerName = '';
 
-// ---- Audio (Web Audio API) ----
+// ---- Audio ----
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playCorrect() {
-    const t = audioCtx.currentTime;
-
-    // Main fanfare: ascending chord notes
-    const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
-    notes.forEach((freq, i) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, t + i * 0.07);
-        gain.gain.setValueAtTime(0.3, t + i * 0.07);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.07 + 0.35);
-        osc.start(t + i * 0.07);
-        osc.stop(t + i * 0.07 + 0.35);
-    });
-
-    // Shimmer layer
-    const osc2 = audioCtx.createOscillator();
-    const gain2 = audioCtx.createGain();
-    osc2.connect(gain2);
-    gain2.connect(audioCtx.destination);
-    osc2.type = 'triangle';
-    osc2.frequency.setValueAtTime(2094, t + 0.15);
-    osc2.frequency.exponentialRampToValueAtTime(4186, t + 0.45);
-    gain2.gain.setValueAtTime(0.12, t + 0.15);
-    gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
-    osc2.start(t + 0.15);
-    osc2.stop(t + 0.45);
+    const audio = new Audio('correct.mp3');
+    audio.play();
 }
 
 function playWrong() {
@@ -315,14 +288,13 @@ function handleAnswer(idx) {
         vibrate([60, 30, 60]);
         const cells = document.querySelectorAll('.cell');
         if (cells[correctCell]) {
-            showBurst(cells[correctCell]);
             cells[correctCell].classList.add('correct');
         }
         score++;
         if (score > bestScore) bestScore = score;
         updateScoreUI();
         currentStage = Math.min(currentStage + 1, GRID_SIZES.length - 1);
-        setTimeout(() => startRound(), 200); // quickly advance to next stage
+        setTimeout(() => startRound(), 0);
     } else {
         if (!mistakeUsed) {
             // First mistake – forgive and let player try again
