@@ -6,28 +6,47 @@ const TIME_LIMIT = 5; // seconds per round
 let currentStage = 0;   // index into GRID_SIZES
 let score = 0;
 let bestScore = 0;
-let history = [];
 let timerInterval = null;
 let timeLeft = TIME_LIMIT;
 let correctCell = -1;   // index of the odd-colored cell
 let gameActive = false;
 let roundActive = false;
+let mistakeUsed = false; // one-time mistake forgiveness per game
+let playerName = '';
 
 // ---- Audio (Web Audio API) ----
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playCorrect() {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.15);
-    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.4);
+    const t = audioCtx.currentTime;
+
+    // Main fanfare: ascending chord notes
+    const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
+    notes.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t + i * 0.07);
+        gain.gain.setValueAtTime(0.3, t + i * 0.07);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.07 + 0.35);
+        osc.start(t + i * 0.07);
+        osc.stop(t + i * 0.07 + 0.35);
+    });
+
+    // Shimmer layer
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(2094, t + 0.15);
+    osc2.frequency.exponentialRampToValueAtTime(4186, t + 0.45);
+    gain2.gain.setValueAtTime(0.12, t + 0.15);
+    gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+    osc2.start(t + 0.15);
+    osc2.stop(t + 0.45);
 }
 
 function playWrong() {
@@ -56,6 +75,25 @@ function playTimeout() {
     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
     osc.start();
     osc.stop(audioCtx.currentTime + 0.5);
+}
+
+// ---- Vibration ----
+function vibrate(pattern) {
+    if (navigator.vibrate) navigator.vibrate(pattern);
+}
+
+// ---- Burst animation ----
+function showBurst(cellEl) {
+    cellEl.classList.add('burst');
+    for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'burst-particle';
+        particle.style.setProperty('--angle', `${i * 45}deg`);
+        particle.style.backgroundColor = cellEl.style.backgroundColor;
+        cellEl.appendChild(particle);
+        setTimeout(() => particle.remove(), 600);
+    }
+    setTimeout(() => cellEl.classList.remove('burst'), 600);
 }
 
 // ---- Color helpers ----
@@ -115,34 +153,65 @@ function updateStageUI() {
     document.getElementById('stage').textContent = `${n}×${n}`;
 }
 
-// ---- History ----
-function loadHistory() {
+// ---- Player name ----
+function loadPlayerName() {
+    return localStorage.getItem('colorGamePlayerName') || '';
+}
+
+function savePlayerName(name) {
+    localStorage.setItem('colorGamePlayerName', name);
+}
+
+// ---- Ranking ----
+function loadRanking() {
     try {
-        const data = JSON.parse(localStorage.getItem('colorGameHistory') || '[]');
-        history = Array.isArray(data) ? data : [];
-        bestScore = history.length > 0 ? Math.max(...history) : 0;
+        const data = JSON.parse(localStorage.getItem('colorGameRanking') || '[]');
+        return Array.isArray(data) ? data : [];
     } catch {
-        history = [];
-        bestScore = 0;
+        return [];
     }
 }
 
-function saveHistory() {
+function saveRanking(ranking) {
     try {
-        localStorage.setItem('colorGameHistory', JSON.stringify(history.slice(-20)));
+        localStorage.setItem('colorGameRanking', JSON.stringify(ranking));
     } catch {}
 }
 
-function renderHistory() {
-    const list = document.getElementById('history-list');
+function addToRanking(name, s) {
+    const ranking = loadRanking();
+    ranking.push({ name: name || '名無し', score: s });
+    ranking.sort((a, b) => b.score - a.score);
+    const top10 = ranking.slice(0, 10);
+    saveRanking(top10);
+    return top10;
+}
+
+function renderRanking() {
+    const ranking = loadRanking();
+    const list = document.getElementById('ranking-list');
+    if (!list) return;
     list.innerHTML = '';
-    const recent = history.slice(-10).reverse();
-    recent.forEach((s, i) => {
+    if (ranking.length === 0) {
         const li = document.createElement('li');
-        li.textContent = `${i === 0 ? '🏆 ' : ''}${s} ステージ`;
-        if (i === 0) li.classList.add('best');
+        li.textContent = 'まだ記録がありません';
+        li.className = 'rank-empty';
+        list.appendChild(li);
+        return;
+    }
+    ranking.forEach((entry, i) => {
+        const li = document.createElement('li');
+        const medals = ['🥇', '🥈', '🥉'];
+        const prefix = medals[i] !== undefined ? medals[i] : `${i + 1}.`;
+        li.textContent = `${prefix} ${entry.name}  ${entry.score} ステージ`;
+        if (i === 0) li.classList.add('rank-first');
         list.appendChild(li);
     });
+}
+
+function loadBestScore() {
+    const ranking = loadRanking();
+    return ranking.length > 0 ? ranking[0].score : 0;
 }
 
 // ---- Timer ----
@@ -164,12 +233,34 @@ function stopTimer() {
     clearInterval(timerInterval);
 }
 
+// ---- Screen management ----
+function showStartScreen() {
+    document.getElementById('start-screen').classList.remove('hidden');
+    document.getElementById('game-screen').classList.add('hidden');
+    document.getElementById('result-screen').classList.add('hidden');
+    renderRanking();
+    const input = document.getElementById('player-name-input');
+    if (input) input.value = loadPlayerName();
+}
+
+function showGameScreen() {
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('game-screen').classList.remove('hidden');
+    document.getElementById('result-screen').classList.add('hidden');
+}
+
 // ---- Game flow ----
 function startGame() {
+    const input = document.getElementById('player-name-input');
+    playerName = input ? input.value.trim() : '';
+    if (playerName) savePlayerName(playerName);
+
     currentStage = 0;
     score = 0;
+    mistakeUsed = false;
+    bestScore = loadBestScore();
     gameActive = true;
-    document.getElementById('result-screen').classList.add('hidden');
+    showGameScreen();
     updateScoreUI();
     startRound();
 }
@@ -216,24 +307,50 @@ function onCellTouch(e) {
 
 function handleAnswer(idx) {
     if (!roundActive) return;
-    roundActive = false;
-    stopTimer();
 
     if (idx === correctCell) {
+        roundActive = false;
+        stopTimer();
         playCorrect();
-        highlightCell(correctCell, true);
-        score++; // count total cleared pages
+        vibrate([60, 30, 60]);
+        const cells = document.querySelectorAll('.cell');
+        if (cells[correctCell]) {
+            showBurst(cells[correctCell]);
+            cells[correctCell].classList.add('correct');
+        }
+        score++;
         if (score > bestScore) bestScore = score;
         updateScoreUI();
         currentStage = Math.min(currentStage + 1, GRID_SIZES.length - 1);
-        setTimeout(() => {
-            startRound();
-        }, 600);
+        setTimeout(() => startRound(), 200); // quickly advance to next stage
     } else {
-        playWrong();
-        highlightCell(idx, false);
-        highlightCell(correctCell, true);
-        setTimeout(() => endGame(), 800);
+        if (!mistakeUsed) {
+            // First mistake – forgive and let player try again
+            mistakeUsed = true;
+            playWrong();
+            vibrate(200);
+            highlightCell(idx, false);
+            const msg = document.getElementById('chance-message');
+            if (msg) {
+                msg.classList.remove('hidden');
+                setTimeout(() => msg.classList.add('hidden'), 1000);
+            }
+            setTimeout(() => {
+                const cells = document.querySelectorAll('.cell');
+                if (cells[idx]) cells[idx].classList.remove('wrong');
+                roundActive = true;
+                startTimer(); // reset timer for another attempt
+            }, 600);
+        } else {
+            // Second mistake – end game
+            roundActive = false;
+            stopTimer();
+            playWrong();
+            vibrate([200, 100, 200]);
+            highlightCell(idx, false);
+            highlightCell(correctCell, true);
+            setTimeout(() => endGame(), 800);
+        }
     }
 }
 
@@ -241,16 +358,15 @@ function onTimeout() {
     if (!roundActive) return;
     roundActive = false;
     playTimeout();
+    vibrate(500);
     highlightCell(correctCell, true);
     setTimeout(() => endGame(), 800);
 }
 
 function endGame() {
     gameActive = false;
-    history.push(score);
-    if (score > bestScore) bestScore = score;
-    saveHistory();
-    renderHistory();
+    addToRanking(playerName || '名無し', score);
+    bestScore = loadBestScore();
     updateScoreUI();
 
     document.getElementById('result-score').textContent = score;
@@ -267,9 +383,7 @@ function highlightCell(idx, correct) {
 
 // ---- Init ----
 document.addEventListener('DOMContentLoaded', () => {
-    loadHistory();
-    renderHistory();
-    updateScoreUI();
+    showStartScreen();
 
     document.getElementById('start-btn').addEventListener('click', () => {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -277,6 +391,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('retry-btn').addEventListener('click', () => {
         if (audioCtx.state === 'suspended') audioCtx.resume();
-        startGame();
+        showStartScreen();
     });
 });

@@ -7,36 +7,54 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>🎨 色違いゲーム</h1>
-
-    <div class="info-bar">
-        <div class="info-item">
-            <div class="info-label">グリッド</div>
-            <div class="info-value" id="stage">2×2</div>
+    <!-- Start screen -->
+    <div id="start-screen">
+        <div class="start-logo">
+            <img src="https://github.com/user-attachments/assets/9fc2376b-8f10-4d79-bbbb-05fece789ec6" alt="しのめゲームズ" class="logo-img">
         </div>
-        <div class="info-item">
-            <div class="info-label">残り時間</div>
-            <div class="info-value timer-value" id="timer">5</div>
+        <h1>🎨 色違いゲーム</h1>
+        <div class="name-input-area">
+            <label for="player-name-input">プレイヤー名</label>
+            <input type="text" id="player-name-input" maxlength="10" placeholder="名前を入力してください">
         </div>
-        <div class="info-item">
-            <div class="info-label">スコア</div>
-            <div class="info-value" id="score">0</div>
+        <div class="ranking-area">
+            <h3>🏆 ランキング TOP10</h3>
+            <ol id="ranking-list"></ol>
         </div>
-        <div class="info-item">
-            <div class="info-label">最高</div>
-            <div class="info-value" id="best-score">0</div>
-        </div>
+        <button class="btn" id="start-btn">🎮 スタート</button>
     </div>
 
-    <div id="grid-wrapper">
-        <div id="grid"></div>
-    </div>
+    <!-- Game screen -->
+    <div id="game-screen" class="hidden">
+        <div class="game-header">
+            <img src="https://github.com/user-attachments/assets/9fc2376b-8f10-4d79-bbbb-05fece789ec6" alt="しのめゲームズ" class="game-logo">
+            <h1>🎨 色違いゲーム</h1>
+        </div>
 
-    <button class="btn" id="start-btn">🎮 スタート</button>
+        <div class="info-bar">
+            <div class="info-item">
+                <div class="info-label">グリッド</div>
+                <div class="info-value" id="stage">2×2</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">残り時間</div>
+                <div class="info-value timer-value" id="timer">5</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">スコア</div>
+                <div class="info-value" id="score">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">最高</div>
+                <div class="info-value" id="best-score">0</div>
+            </div>
+        </div>
 
-    <div class="history-section">
-        <h3>📋 履歴（最近10回）</h3>
-        <ul id="history-list"></ul>
+        <div id="grid-wrapper">
+            <div id="grid"></div>
+        </div>
+
+        <div id="chance-message" class="chance-message hidden">もう一度！</div>
     </div>
 
     <!-- Result overlay -->
@@ -51,7 +69,7 @@
                 最高記録
                 <span id="result-best">0</span>
             </div>
-            <button class="btn" id="retry-btn" style="margin-top:20px;margin-bottom:0">🔄 もう一度</button>
+            <button class="btn" id="retry-btn" style="margin-top:20px;margin-bottom:0">🏠 スタートへ</button>
         </div>
     </div>
 
