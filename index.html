@@ -36,6 +36,7 @@
             </div>
             
             <div class="game-canvas-wrapper">
+                <img src="https://github.com/user-attachments/assets/5dfb7a0a-0036-4605-b806-c065e314dd63" alt="ロゴ" class="game-logo">
                 <canvas id="gameCanvas" width="300" height="600"></canvas>
                 <div id="gameOver" class="game-over-screen">
                     <h2>ゲームオーバー</h2>
@@ -62,16 +63,21 @@
                 </div>
                 <div class="control-item">
                     <span class="key">↑</span>
-                    <span>回転</span>
+                    <span>即落下</span>
                 </div>
                 <div class="control-item">
                     <span class="key">スペース</span>
+                    <span>回転</span>
+                </div>
+                <div class="control-item">
+                    <span class="key">P</span>
                     <span>一時停止/再開</span>
                 </div>
             </div>
         </div>
     </div>
     
+    <audio id="bgm" src="Korobeyniki_8bit.mp3" loop autoplay></audio>
     <script src="tetris.js"></script>
 </body>
 </html>

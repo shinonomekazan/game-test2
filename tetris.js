@@ -271,6 +271,12 @@ function drop() {
     return true;
 }
 
+// Hard drop - instantly drop piece to bottom
+function hardDrop() {
+    while (drop()) {}
+    dropCounter = 0;
+}
+
 // Lock piece to board
 function lockPiece() {
     for (let row = 0; row < currentPiece.shape.length; row++) {
@@ -391,9 +397,14 @@ document.addEventListener('keydown', event => {
             break;
         case 'ArrowUp':
             event.preventDefault();
-            if (!isPaused) rotate();
+            if (!isPaused) hardDrop();
             break;
         case ' ':
+            event.preventDefault();
+            if (!isPaused) rotate();
+            break;
+        case 'p':
+        case 'P':
             event.preventDefault();
             isPaused = !isPaused;
             break;
@@ -410,6 +421,19 @@ document.getElementById('restartButton').addEventListener('click', () => {
     drawBoard();
     drawNext();
 });
+
+// Start BGM on first user interaction if autoplay was blocked
+const bgm = document.getElementById('bgm');
+document.addEventListener('keydown', () => {
+    if (bgm && bgm.paused) {
+        bgm.play().catch(() => {});
+    }
+}, { once: true });
+document.addEventListener('click', () => {
+    if (bgm && bgm.paused) {
+        bgm.play().catch(() => {});
+    }
+}, { once: true });
 
 // Initialize and start the game
 init();
