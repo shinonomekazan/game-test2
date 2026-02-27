@@ -112,6 +112,14 @@ body {
     position: relative;
 }
 
+.game-logo {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    height: 40px;
+    z-index: 10;
+}
+
 #gameCanvas {
     background: rgba(0, 0, 0, 0.5);
     border-radius: 20px;
