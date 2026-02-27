@@ -350,7 +350,7 @@ function handleAnswer(idx) {
         score++;
         if (score > bestScore) bestScore = score;
         updateScoreUI();
-        timeLimit = Math.min(TIME_LIMIT_INITIAL + 10, timeLimit + 1);
+        timeLimit = Math.min(10, timeLimit + 1);
         if (currentCourse === 'standard') {
             currentStage = Math.min(currentStage + 1, GRID_SIZES.length - 1);
         }
