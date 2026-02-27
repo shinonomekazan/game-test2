@@ -356,14 +356,10 @@ function handleAnswer(idx) {
         }
         setTimeout(() => startRound(), 0);
     } else {
-        roundActive = false;
-        stopTimer();
         playWrong();
         vibrate([200, 100, 200]);
         highlightCell(idx, false);
-        highlightCell(correctCell, true);
         timeLimit = Math.max(1, timeLimit - 1);
-        setTimeout(() => endGame(), 800);
     }
 }
 
