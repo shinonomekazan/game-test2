@@ -3,109 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>華やかなテトリス</title>
-    <link rel="stylesheet" href="style.css">
+    <title>しののめゲームズ</title>
+    <link rel="stylesheet" href="home.css">
 </head>
 <body>
-    <div class="container">
-        <div class="game-header">
-            <h1>✨ 華やかなテトリス ✨</h1>
+    <header>
+        <img src="https://github.com/user-attachments/assets/22ba5e8d-bd3f-4699-b735-48318333cfb2" alt="しののめゲームズ ロゴ" class="logo">
+    </header>
+    <main>
+        <h1>しののめゲームズ</h1>
+        <div class="games-grid">
+            <a href="tetris/" class="game-card">
+                <img src="https://github.com/user-attachments/assets/9ea4929d-125b-40a1-8a77-9eb6ba321731" alt="華やかなテトリス" class="thumbnail">
+                <div class="card-title">✨ 華やかなテトリス ✨</div>
+            </a>
+            <a href="color-game/" class="game-card">
+                <img src="https://github.com/user-attachments/assets/fd41056f-040f-4294-827f-1f721d1d9a35" alt="色違いゲーム" class="thumbnail">
+                <div class="card-title">🎨 色違いゲーム</div>
+            </a>
         </div>
-        
-        <div class="game-wrapper">
-            <div class="info-panel">
-                <div class="score-container">
-                    <h2>スコア</h2>
-                    <div id="score" class="score-value">0</div>
-                </div>
-                
-                <div class="level-container">
-                    <h2>レベル</h2>
-                    <div id="level" class="level-value">1</div>
-                </div>
-                
-                <div class="lines-container">
-                    <h2>ライン</h2>
-                    <div id="lines" class="lines-value">0</div>
-                </div>
-                
-                <div class="next-container">
-                    <h2>次のブロック</h2>
-                    <canvas id="nextCanvas" width="120" height="120"></canvas>
-                </div>
-
-                <div class="history-container">
-                    <h2>スコア履歴</h2>
-                    <div id="scoreHistory" class="score-history"></div>
-                </div>
-            </div>
-            
-            <div class="game-canvas-wrapper">
-                <img src="https://github.com/user-attachments/assets/5dfb7a0a-0036-4605-b806-c065e314dd63" alt="ロゴ" class="game-logo">
-                <canvas id="gameCanvas" width="300" height="600"></canvas>
-                <div id="gameOver" class="game-over-screen">
-                    <h2>ゲームオーバー</h2>
-                    <p>スコア: <span id="finalScore">0</span></p>
-                    <div class="game-over-history">
-                        <h3>スコア履歴</h3>
-                        <div id="gameOverHistory"></div>
-                    </div>
-                    <button id="restartButton">もう一度プレイ</button>
-                </div>
-                <div id="pauseOverlay" class="pause-overlay">
-                    <h2>⏸ 一時停止</h2>
-                    <button id="resumeButton">▶ 再開</button>
-                </div>
-                <button id="pauseButton" class="pause-btn" title="一時停止 (P)">⏸</button>
-            </div>
-        </div>
-        
-        <!-- Mobile touch controls -->
-        <div class="mobile-controls">
-            <div class="mobile-row">
-                <button class="mobile-btn" id="btnRotate">↺<br><small>回転</small></button>
-                <button class="mobile-btn" id="btnHardDrop">⬆<br><small>即落下</small></button>
-                <button class="mobile-btn" id="btnPause">⏸<br><small>停止</small></button>
-            </div>
-            <div class="mobile-row">
-                <button class="mobile-btn" id="btnLeft">◀<br><small>左</small></button>
-                <button class="mobile-btn" id="btnSoftDrop">▼<br><small>落下</small></button>
-                <button class="mobile-btn" id="btnRight">▶<br><small>右</small></button>
-            </div>
-        </div>
-        
-        <div class="controls">
-            <h3>操作方法</h3>
-            <div class="control-buttons">
-                <div class="control-item">
-                    <span class="key">←</span>
-                    <span>左に移動</span>
-                </div>
-                <div class="control-item">
-                    <span class="key">→</span>
-                    <span>右に移動</span>
-                </div>
-                <div class="control-item">
-                    <span class="key">↓</span>
-                    <span>高速落下</span>
-                </div>
-                <div class="control-item">
-                    <span class="key">↑</span>
-                    <span>即落下</span>
-                </div>
-                <div class="control-item">
-                    <span class="key">スペース</span>
-                    <span>回転</span>
-                </div>
-                <div class="control-item">
-                    <span class="key">P</span>
-                    <span>一時停止/再開</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <audio id="bgm" src="Korobeyniki_8bit.mp3" loop autoplay></audio>
-    <script src="tetris.js"></script>
+    </main>
 </body>
 </html>
