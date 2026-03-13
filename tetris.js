@@ -112,6 +112,7 @@ function init() {
     gameOver = false;
     isPaused = false;
     dropInterval = BASE_DROP_INTERVAL;
+    updateBGMPlaybackRate();
     particles = [];
     
     currentPiece = createPiece();
@@ -362,6 +363,7 @@ function clearLines() {
         score += multiplier * level;
         level = Math.floor(lines / 10) + 1;
         dropInterval = getDropInterval(score);
+        updateBGMPlaybackRate();
         updateScore();
     }
 }
@@ -583,8 +585,15 @@ function setupMobileControls() {
 
 setupMobileControls();
 
-// Start BGM on first user interaction if autoplay was blocked
+// Update BGM playback rate to match current drop speed
 const bgm = document.getElementById('bgm');
+
+function updateBGMPlaybackRate() {
+    if (!bgm) return;
+    bgm.playbackRate = BASE_DROP_INTERVAL / dropInterval;
+}
+
+// Start BGM on first user interaction if autoplay was blocked
 document.addEventListener('keydown', () => {
     if (bgm && bgm.paused) {
         bgm.play().catch(() => {});
