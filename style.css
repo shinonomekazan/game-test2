@@ -238,6 +238,169 @@ body {
     text-align: center;
 }
 
+/* Pause button (top-right of canvas) */
+.pause-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 1em;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+}
+
+.pause-btn:hover {
+    background: rgba(0, 0, 0, 0.85);
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Pause overlay */
+.pause-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.88);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    z-index: 20;
+}
+
+.pause-overlay.show {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.pause-overlay h2 {
+    color: #fff;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+#resumeButton {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: #fff;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.2em;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+    transition: all 0.3s ease;
+}
+
+#resumeButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+}
+
+/* Score history */
+.history-container {
+    margin-top: 20px;
+}
+
+.score-history {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 8px;
+    min-height: 40px;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    padding: 5px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.85em;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-rank {
+    font-weight: bold;
+    color: #f7dc6f;
+    min-width: 18px;
+}
+
+.history-score {
+    font-weight: bold;
+    flex: 1;
+    text-align: center;
+}
+
+.history-date {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8em;
+}
+
+/* Game over history */
+.game-over-history {
+    margin: 15px 0;
+    text-align: left;
+}
+
+.game-over-history h3 {
+    color: #f093fb;
+    font-size: 1em;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+/* Mobile touch controls */
+.mobile-controls {
+    display: none;
+    margin-top: 20px;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.mobile-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.mobile-btn {
+    background: linear-gradient(135deg, rgba(240, 147, 251, 0.85) 0%, rgba(245, 87, 108, 0.85) 100%);
+    color: #fff;
+    border: none;
+    padding: 12px 16px;
+    font-size: 1.4em;
+    border-radius: 14px;
+    cursor: pointer;
+    min-width: 68px;
+    min-height: 68px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.1s ease;
+    touch-action: none;
+    user-select: none;
+    line-height: 1.2;
+}
+
+.mobile-btn:active {
+    transform: scale(0.92);
+}
+
+.mobile-btn small {
+    display: block;
+    font-size: 0.45em;
+    opacity: 0.9;
+}
+
 @media (max-width: 768px) {
     .game-header h1 {
         font-size: 2em;
@@ -250,7 +413,44 @@ body {
     
     .info-panel {
         width: 100%;
-        max-width: 300px;
+        max-width: 320px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .info-panel h2 {
+        font-size: 1em;
+        margin-bottom: 5px;
+    }
+
+    .score-container,
+    .level-container,
+    .lines-container {
+        margin-bottom: 0;
+        flex: 1;
+        min-width: 80px;
+    }
+
+    .score-value,
+    .level-value,
+    .lines-value {
+        font-size: 1.8em;
+        padding: 10px;
+    }
+
+    .next-container {
+        flex-basis: 100%;
+    }
+
+    .history-container {
+        flex-basis: 100%;
+        margin-top: 0;
+    }
+
+    .mobile-controls {
+        display: flex;
     }
 }
 

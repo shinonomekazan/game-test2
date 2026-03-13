@@ -33,6 +33,11 @@
                     <h2>次のブロック</h2>
                     <canvas id="nextCanvas" width="120" height="120"></canvas>
                 </div>
+
+                <div class="history-container">
+                    <h2>スコア履歴</h2>
+                    <div id="scoreHistory" class="score-history"></div>
+                </div>
             </div>
             
             <div class="game-canvas-wrapper">
@@ -41,8 +46,31 @@
                 <div id="gameOver" class="game-over-screen">
                     <h2>ゲームオーバー</h2>
                     <p>スコア: <span id="finalScore">0</span></p>
+                    <div class="game-over-history">
+                        <h3>スコア履歴</h3>
+                        <div id="gameOverHistory"></div>
+                    </div>
                     <button id="restartButton">もう一度プレイ</button>
                 </div>
+                <div id="pauseOverlay" class="pause-overlay">
+                    <h2>⏸ 一時停止</h2>
+                    <button id="resumeButton">▶ 再開</button>
+                </div>
+                <button id="pauseButton" class="pause-btn" title="一時停止 (P)">⏸</button>
+            </div>
+        </div>
+        
+        <!-- Mobile touch controls -->
+        <div class="mobile-controls">
+            <div class="mobile-row">
+                <button class="mobile-btn" id="btnRotate">↺<br><small>回転</small></button>
+                <button class="mobile-btn" id="btnHardDrop">⬆<br><small>即落下</small></button>
+                <button class="mobile-btn" id="btnPause">⏸<br><small>停止</small></button>
+            </div>
+            <div class="mobile-row">
+                <button class="mobile-btn" id="btnLeft">◀<br><small>左</small></button>
+                <button class="mobile-btn" id="btnSoftDrop">▼<br><small>落下</small></button>
+                <button class="mobile-btn" id="btnRight">▶<br><small>右</small></button>
             </div>
         </div>
         

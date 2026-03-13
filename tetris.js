@@ -11,6 +11,21 @@ const BLOCK_SIZE = 30;
 const NEXT_CANVAS_SIZE = 4;
 const BASE_DROP_INTERVAL = 1000;
 const MIN_DROP_INTERVAL = 100;
+
+// Score-based drop interval
+function getDropInterval(currentScore) {
+    if (currentScore >= 30000) {
+        const extra = Math.floor((currentScore - 30000) / 10000);
+        return Math.max(MIN_DROP_INTERVAL, 280 - extra * 30);
+    }
+    if (currentScore >= 20000) return 380;
+    if (currentScore >= 10000) return 500;
+    if (currentScore >= 7000) return 600;
+    if (currentScore >= 5000) return 700;
+    if (currentScore >= 3000) return 800;
+    if (currentScore >= 1000) return 900;
+    return BASE_DROP_INTERVAL;
+}
 const COLORS = [
     null,
     '#FF6B6B', // I - Red
@@ -104,7 +119,9 @@ function init() {
     resetPosition();
     
     updateScore();
+    updateScoreHistoryDisplay();
     document.getElementById('gameOver').classList.remove('show');
+    document.getElementById('pauseOverlay').classList.remove('show');
 }
 
 // Reset piece position
@@ -287,6 +304,7 @@ function lockPiece() {
                 
                 if (boardY < 0) {
                     gameOver = true;
+                    saveScoreHistory(score);
                     document.getElementById('gameOver').classList.add('show');
                     document.getElementById('finalScore').textContent = score;
                     return;
@@ -305,6 +323,7 @@ function lockPiece() {
     
     if (collide()) {
         gameOver = true;
+        saveScoreHistory(score);
         document.getElementById('gameOver').classList.add('show');
         document.getElementById('finalScore').textContent = score;
     }
@@ -342,7 +361,7 @@ function clearLines() {
         const multiplier = scoreMultipliers[Math.min(linesCleared, 4)];
         score += multiplier * level;
         level = Math.floor(lines / 10) + 1;
-        dropInterval = Math.max(MIN_DROP_INTERVAL, BASE_DROP_INTERVAL - (level - 1) * 100);
+        dropInterval = getDropInterval(score);
         updateScore();
     }
 }
@@ -352,6 +371,39 @@ function updateScore() {
     document.getElementById('score').textContent = score;
     document.getElementById('level').textContent = level;
     document.getElementById('lines').textContent = lines;
+}
+
+// Score history (localStorage)
+function saveScoreHistory(finalScore) {
+    const history = JSON.parse(localStorage.getItem('tetrisScoreHistory') || '[]');
+    history.unshift({ score: finalScore, date: new Date().toLocaleDateString('ja-JP') });
+    history.splice(5); // Keep only last 5
+    localStorage.setItem('tetrisScoreHistory', JSON.stringify(history));
+    updateScoreHistoryDisplay();
+}
+
+function updateScoreHistoryDisplay() {
+    const history = JSON.parse(localStorage.getItem('tetrisScoreHistory') || '[]');
+    const historyEl = document.getElementById('scoreHistory');
+    const gameOverHistoryEl = document.getElementById('gameOverHistory');
+
+    const renderHistory = (container) => {
+        if (!container) return;
+        if (history.length === 0) {
+            container.innerHTML = '<div class="history-item"><span>記録なし</span></div>';
+            return;
+        }
+        container.innerHTML = history.map((entry, i) => `
+            <div class="history-item">
+                <span class="history-rank">${i + 1}.</span>
+                <span class="history-score">${entry.score.toLocaleString()}</span>
+                <span class="history-date">${entry.date}</span>
+            </div>
+        `).join('');
+    };
+
+    renderHistory(historyEl);
+    renderHistory(gameOverHistoryEl);
 }
 
 // Game loop
@@ -407,6 +459,7 @@ document.addEventListener('keydown', event => {
         case 'P':
             event.preventDefault();
             isPaused = !isPaused;
+            document.getElementById('pauseOverlay').classList.toggle('show', isPaused);
             break;
     }
     
@@ -421,6 +474,114 @@ document.getElementById('restartButton').addEventListener('click', () => {
     drawBoard();
     drawNext();
 });
+
+// Pause / resume buttons
+document.getElementById('pauseButton').addEventListener('click', () => {
+    if (gameOver) return;
+    isPaused = !isPaused;
+    document.getElementById('pauseOverlay').classList.toggle('show', isPaused);
+});
+
+document.getElementById('resumeButton').addEventListener('click', () => {
+    isPaused = false;
+    document.getElementById('pauseOverlay').classList.remove('show');
+});
+
+// Touch controls on canvas (swipe / tap)
+let touchStartX = 0;
+let touchStartY = 0;
+let touchStartTime = 0;
+let touchMoveLastX = 0;
+
+canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchMoveLastX = touchStartX;
+    touchStartTime = Date.now();
+}, { passive: false });
+
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (gameOver || isPaused) return;
+    const x = e.touches[0].clientX;
+    const dx = x - touchMoveLastX;
+    if (Math.abs(dx) > 20) {
+        move(dx > 0 ? 1 : -1);
+        touchMoveLastX = x;
+        drawBoard();
+    }
+}, { passive: false });
+
+canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    if (gameOver || isPaused) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    const elapsed = Date.now() - touchStartTime;
+    // Tap: rotate
+    if (Math.abs(dx) < 15 && Math.abs(dy) < 15 && elapsed < 250) {
+        rotate();
+        drawBoard();
+        return;
+    }
+    // Swipe down: hard drop
+    if (dy > 50 && Math.abs(dy) > Math.abs(dx)) {
+        hardDrop();
+        drawBoard();
+    }
+}, { passive: false });
+
+// On-screen mobile button controls
+function setupMobileControls() {
+    function bindBtn(id, action, repeat) {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        let repeatTimer = null;
+
+        const execute = () => {
+            if (gameOver) return;
+            if (id !== 'btnPause' && isPaused) return;
+            action();
+            if (!gameOver && !isPaused) drawBoard();
+        };
+
+        const startAction = (e) => {
+            e.preventDefault();
+            execute();
+            if (repeat) {
+                repeatTimer = setInterval(execute, 150);
+            }
+        };
+
+        const stopAction = (e) => {
+            e.preventDefault();
+            if (repeatTimer) {
+                clearInterval(repeatTimer);
+                repeatTimer = null;
+            }
+        };
+
+        btn.addEventListener('touchstart', startAction, { passive: false });
+        btn.addEventListener('touchend', stopAction, { passive: false });
+        btn.addEventListener('mousedown', startAction);
+        btn.addEventListener('mouseup', stopAction);
+        btn.addEventListener('mouseleave', stopAction);
+    }
+
+    bindBtn('btnLeft', () => move(-1), true);
+    bindBtn('btnRight', () => move(1), true);
+    bindBtn('btnSoftDrop', () => drop(), true);
+    bindBtn('btnHardDrop', () => hardDrop(), false);
+    bindBtn('btnRotate', () => rotate(), false);
+    bindBtn('btnPause', () => {
+        if (gameOver) return;
+        isPaused = !isPaused;
+        document.getElementById('pauseOverlay').classList.toggle('show', isPaused);
+    }, false);
+}
+
+setupMobileControls();
 
 // Start BGM on first user interaction if autoplay was blocked
 const bgm = document.getElementById('bgm');
@@ -437,6 +598,7 @@ document.addEventListener('click', () => {
 
 // Initialize and start the game
 init();
+updateScoreHistoryDisplay();
 drawBoard();
 drawNext();
 gameLoop();
