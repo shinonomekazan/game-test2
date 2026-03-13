@@ -1,5 +1,7 @@
 # 華やかなテトリス (Glamorous Tetris)
 
+🌐 **公開URL**: [https://shinonomekazan.github.io/game-test2/](https://shinonomekazan.github.io/game-test2/)
+
 Webブラウザで遊べる、カラフルで華やかなテトリスゲームです。
 
 ## 特徴
@@ -15,7 +17,7 @@ Webブラウザで遊べる、カラフルで華やかなテトリスゲーム�
 
 ### オンラインでプレイ
 GitHub Pagesで公開されているゲームをプレイできます：
-- URL: `https://shinonomekazan.github.io/game-test2/`
+- URL: [https://shinonomekazan.github.io/game-test2/](https://shinonomekazan.github.io/game-test2/)
 
 ### ローカルでプレイ
 1. `index.html` をWebブラウザで開いてください
@@ -144,4 +146,4 @@ GitHub Pagesで公開されているゲームをプレイできます：
 ### デプロイ後の確認
 
 デプロイが完了すると、以下のURLでゲームにアクセスできます：
-- `https://shinonomekazan.github.io/game-test2/`
+- [https://shinonomekazan.github.io/game-test2/](https://shinonomekazan.github.io/game-test2/)
